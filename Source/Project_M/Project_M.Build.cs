@@ -9,7 +9,9 @@ public class Project_M : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", 
-			"CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+			"CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayAbilities",
+			"GameplayTasks", "GameplayTags", "UMG", "Slate", "SlateCore", "AIModule", "Niagara", 
+			"OnlineSubsystem","OnlineSubsystemEOS","OnlineSubsystemUtils","Networking","HTTP","Json" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput" });
 
