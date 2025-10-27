@@ -10,8 +10,9 @@ public class Project_M : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", 
 			"CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayAbilities",
-			"GameplayTasks", "GameplayTags", "UMG", "Slate", "SlateCore", "AIModule", "Niagara", 
-			"OnlineSubsystem","OnlineSubsystemEOS","OnlineSubsystemUtils","Networking","HTTP","Json" });
+			"GameplayTasks", "GameplayTags", "UMG", "CommonInput","Slate", "SlateCore", "AIModule", 
+			"Niagara", "OnlineSubsystem","OnlineSubsystemEOS","OnlineSubsystemUtils","Networking",
+			"HTTP","Json" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput" });
 

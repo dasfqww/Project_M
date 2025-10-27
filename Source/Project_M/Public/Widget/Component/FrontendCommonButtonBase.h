@@ -23,6 +23,8 @@ private:
 	virtual void NativePreConstruct() override;
 
 	virtual void NativeOnCurrentTextStyleChanged() override;
+	virtual void NativeOnHovered() override;
+	virtual void NativeOnUnhovered() override;
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	UCommonTextBlock* CommonButtonText;
