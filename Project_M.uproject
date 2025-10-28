@@ -12,7 +12,8 @@
 				"Engine",
 				"EnhancedInput",
 				"CommonUI",
-				"DeveloperSettings"
+				"DeveloperSettings",
+				"CoreUObject"
 			]
 		}
 	],

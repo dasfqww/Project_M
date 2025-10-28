@@ -44,7 +44,7 @@ void UFrontendUISubsystem::RegisterCreatedPrimaryLayoutWidget(UWidget_PrimaryLay
 
 	CreatedPrimaryLayout = InCreatedWidget;
 
-	Debug::Print(TEXT("Primary layout widget stored"));
+	//Debug::Print(TEXT("Primary layout widget stored"));
 }
 
 void UFrontendUISubsystem::PushSoftWidgetToStackAsync(const FGameplayTag& InWidgetStackTag,

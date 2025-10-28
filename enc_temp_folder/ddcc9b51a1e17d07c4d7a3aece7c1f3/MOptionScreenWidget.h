@@ -28,9 +28,6 @@ private:
 	void OnResetBoundActionTriggered();
 	void OnBackBoundActionTriggered();
 
-	UFUNCTION()
-	void OnOptionsTabSelected(FName TabId);
-
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMFrontendTabListWidgetBase> OptionTabs;
 

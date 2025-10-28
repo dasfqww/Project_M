@@ -32,8 +32,6 @@ void UMOptionScreenWidget::NativeOnInitialized()
 			FSimpleDelegate::CreateUObject(this, &ThisClass::OnBackBoundActionTriggered)
 		)
 	);
-
-	OptionTabs->OnTabSelected.AddUniqueDynamic(this, &ThisClass::OnOptionsTabSelected);
 }
 
 void UMOptionScreenWidget::NativeOnActivated()
@@ -79,9 +77,4 @@ void UMOptionScreenWidget::OnResetBoundActionTriggered()
 void UMOptionScreenWidget::OnBackBoundActionTriggered()
 {
 	DeactivateWidget();
-}
-
-void UMOptionScreenWidget::OnOptionsTabSelected(FName TabId)
-{
-	Debug::Print(TEXT("New Tab Selected. Tab ID: ") + TabId.ToString());
 }
