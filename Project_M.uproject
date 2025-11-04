@@ -13,7 +13,8 @@
 				"EnhancedInput",
 				"CommonUI",
 				"DeveloperSettings",
-				"CoreUObject"
+				"CoreUObject",
+				"UMG"
 			]
 		}
 	],

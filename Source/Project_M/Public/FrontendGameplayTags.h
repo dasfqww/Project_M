@@ -17,4 +17,6 @@ namespace FrontendGameplayTags
 	PROJECT_M_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Frontend_Widget_OptionScreen);
 	PROJECT_M_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Frontend_Widget_ConfirmScreen);
 
+	PROJECT_M_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Frontend_Image_TestImage);
+
 }

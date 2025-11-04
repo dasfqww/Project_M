@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "Type/MFrontendEnumTypes.h"
 #include "ListDataObjectBase.generated.h"
 
 #define LIST_DATA_ACCESSOR(DataType,PropertyName) \
@@ -13,11 +14,14 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class PROJECT_M_API UListDataObjectBase : public UObject
 {
 	GENERATED_BODY()
 public:
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnListDataModified, UListDataObjectBase*, EOptionsListDataModifyReason)
+	FOnListDataModified OnListDataModified;
+
 	LIST_DATA_ACCESSOR(FName, DataID)
 	LIST_DATA_ACCESSOR(FText, DataDisplayName)
 	LIST_DATA_ACCESSOR(FText, DescriptionRichText)
@@ -31,9 +35,18 @@ public:
 	virtual TArray<UListDataObjectBase*> GetAllChildListData() const { return TArray<UListDataObjectBase*>(); }
 	virtual bool HasAnyChildListData() const { return false; }
 
+	void SetShouldApplySettingsImmediately(bool bShouldApplyRightAway) { bShouldApplyChangeImmediatly = bShouldApplyRightAway; }
+
+	virtual bool HasDefaultValue() const { return false; }
+	virtual bool CanResetBackToDefaultValue() const { return false; }
+	virtual bool TryResetBackToDefaultValue() { return false; }
+
 protected:
 	//Empty in base class. The child classes should override it to handle the initialization needed accrodingly
 	virtual void OnDataObjectInitialized();
+
+	virtual void NotifyListDataModified(UListDataObjectBase* ModifiedData, 
+		EOptionsListDataModifyReason ModifyReason = EOptionsListDataModifyReason::DirectlyModified);
 
 private:
 	FName DataID;
@@ -44,4 +57,6 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UListDataObjectBase> ParentData;
+
+	bool bShouldApplyChangeImmediatly = false;
 };
