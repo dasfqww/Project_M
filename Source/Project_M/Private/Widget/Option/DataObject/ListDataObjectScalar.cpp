@@ -2,13 +2,89 @@
 
 
 #include "Widget/Option/DataObject/ListDataObjectScalar.h"
+#include "Widget/Option/OptionDataInteractionHelper.h"
 
 FCommonNumberFormattingOptions UListDataObjectScalar::NoDecimal()
 {
-	
+	FCommonNumberFormattingOptions Options;
+	Options.MaximumFractionalDigits = 0;
+
+	return Options;
 }
 
 FCommonNumberFormattingOptions UListDataObjectScalar::WithDecimal(int32 NumFracDigit)
 {
-	return FCommonNumberFormattingOptions();
+	FCommonNumberFormattingOptions Options;
+	Options.MaximumFractionalDigits = NumFracDigit;
+
+	return Options;
+}
+
+float UListDataObjectScalar::GetCurrentValue() const
+{
+	if ( DataDynamicGetter)
+	{
+		return FMath::GetMappedRangeValueClamped(
+			OutputValueRange,
+			DisplayValueRange,
+			StringToFloat(DataDynamicGetter->GetValueAsString())
+		);
+	}
+
+	return 0.0f;
+}
+
+void UListDataObjectScalar::SetCurrentValueFromSlider(float InNewValue)
+{
+	if (DataDynamicSetter)
+	{
+		const float ClampedValue = FMath::GetMappedRangeValueClamped(
+			DisplayValueRange,
+			OutputValueRange,
+			InNewValue
+		);
+
+		DataDynamicSetter->SetValueFromString(LexToString(ClampedValue));
+
+		NotifyListDataModified(this);
+	}
+}
+
+bool UListDataObjectScalar::CanResetBackToDefaultValue() const
+{
+	if (HasDefaultValue() && DataDynamicGetter)
+	{
+		const float DefaultValue = StringToFloat(GetDefaultValueAsString());
+		const float CurrentValue = StringToFloat(DataDynamicGetter->GetValueAsString());
+
+		return !FMath::IsNearlyEqual(DefaultValue, CurrentValue, 0.01f);
+	}
+
+	return false;
+}
+
+bool UListDataObjectScalar::TryResetBackToDefaultValue()
+{
+	if (CanResetBackToDefaultValue())
+	{
+		if (DataDynamicSetter)
+		{
+			DataDynamicSetter->SetValueFromString(GetDefaultValueAsString());
+
+			NotifyListDataModified(this, EOptionsListDataModifyReason::ResetToDefault);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+float UListDataObjectScalar::StringToFloat(const FString& InString) const
+{
+	float OutConvertedValue = 0.f;
+
+	LexFromString(OutConvertedValue, *InString);
+
+	return OutConvertedValue;
 }

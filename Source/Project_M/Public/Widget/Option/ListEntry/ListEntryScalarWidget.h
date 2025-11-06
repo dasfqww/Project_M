@@ -8,6 +8,7 @@
 
 class UCommonNumericTextBlock;
 class UAnalogSlider;
+class UListDataObjectScalar;
 
 /**
  * 
@@ -23,9 +24,18 @@ protected:
 	virtual void OnOwningListDataObjectModified(UListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason) override;
 
 private:
+	UFUNCTION()
+	void OnSliderValueChanged(float Value);
+
+	UFUNCTION()
+	void OnSliderMouseCaptureBegin();
+
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UCommonNumericTextBlock> SettingValueNumText;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UAnalogSlider> SettingSlider;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UListDataObjectScalar> CachedOwningScalarDataObject;
 };
