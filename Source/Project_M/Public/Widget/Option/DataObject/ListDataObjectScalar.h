@@ -30,6 +30,8 @@ public:
 private:
 	virtual bool CanResetBackToDefaultValue() const override;
 	virtual bool TryResetBackToDefaultValue() override;
+	virtual void OnEditDependencyDataModified
+		(UListDataObjectBase* ModifiedDependencyData, EOptionsListDataModifyReason ModifyReason) override;
 
 	float StringToFloat(const FString& InString) const;
 

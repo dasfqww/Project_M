@@ -47,3 +47,21 @@ void UMGameUserSettings::SetUseHDRAudioMode(bool bIsAllowed)
 {
 	bUseHDRAudioMode = bIsAllowed;
 }
+
+float UMGameUserSettings::GetCurrentDisplayGamma() const
+{
+	if (GEngine)
+	{
+		return GEngine->GetDisplayGamma();
+	}
+
+	return 0.0f;
+}
+
+void UMGameUserSettings::SetCurrentDisplayGamma(float InNewGamma)
+{
+	if (GEngine)
+	{
+		GEngine->DisplayGamma = InNewGamma;
+	}
+}

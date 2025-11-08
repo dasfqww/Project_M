@@ -10,7 +10,16 @@
 
 void UListEntryWidgetBase::NativeOnListEntryWidgetHovered(bool bWasHovered)
 {
-	BP_OnListEntryWidgetHovered(bWasHovered, IsListItemSelected());
+	BP_OnListEntryWidgetHovered(bWasHovered, GetListItem() ? IsListItemSelected() : false);
+	
+	if (bWasHovered)
+	{
+		BP_OnToggleEntryWidgetHighlightState(true);
+	}
+	else
+	{
+		BP_OnToggleEntryWidgetHighlightState(GetListItem() && IsListItemSelected() ? true : false);
+	}
 }
 
 void UListEntryWidgetBase::NativeOnListItemObjectSet(UObject* ListItemObject)
@@ -20,6 +29,11 @@ void UListEntryWidgetBase::NativeOnListItemObjectSet(UObject* ListItemObject)
 	//SetVisibility(ESlateVisibility::Visible);
 
 	OnOwningListDataObjectSet(CastChecked<UListDataObjectBase>(ListItemObject));
+}
+
+void UListEntryWidgetBase::NativeOnItemSelectionChanged(bool bIsSelected)
+{
+	BP_OnToggleEntryWidgetHighlightState(bIsSelected);
 }
 
 void UListEntryWidgetBase::NativeOnEntryReleased()
@@ -58,12 +72,34 @@ void UListEntryWidgetBase::OnOwningListDataObjectSet(UListDataObjectBase* InOwni
 	{
 		InOwningListDataObject->OnListDataModified.AddUObject(this, &ThisClass::OnOwningListDataObjectModified);
 	}
+
+	if (!InOwningListDataObject->OnDependencyDataModified.IsBoundToObject(this))
+	{
+		InOwningListDataObject->OnDependencyDataModified.AddUObject(this, &ThisClass::OnOwningDependencyDataObjectModified);
+	}
+
+	OnToggleEditableState(InOwningListDataObject->IsDataCurrentlyEditable());
+
+	CachedOwningDataObject = InOwningListDataObject;
 }
 
 void UListEntryWidgetBase::OnOwningListDataObjectModified(UListDataObjectBase* OwningModifiedData, 
 	EOptionsListDataModifyReason ModifyReason)
 {
 
+}
+
+void UListEntryWidgetBase::OnOwningDependencyDataObjectModified(UListDataObjectBase* OwningModifiedDependencyData, EOptionsListDataModifyReason ModifyReason)
+{
+	if (CachedOwningDataObject)
+	{
+		OnToggleEditableState(CachedOwningDataObject->IsDataCurrentlyEditable());
+	}
+}
+
+void UListEntryWidgetBase::OnToggleEditableState(bool bIsEditable)
+{
+	SettingDisplayNameTextBlock->SetIsEnabled(bIsEditable);
 }
 
 void UListEntryWidgetBase::SelectThisEntryWidget()

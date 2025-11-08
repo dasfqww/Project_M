@@ -24,6 +24,7 @@ protected:
 
 	virtual void NativeOnInitialized() override;
 
+	virtual void OnToggleEditableState(bool bIsEditable) override;
 
 private:
 	void OnPreviousOptionButtonClicked();

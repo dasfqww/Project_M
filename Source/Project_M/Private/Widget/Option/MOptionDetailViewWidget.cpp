@@ -30,7 +30,8 @@ void UMOptionDetailViewWidget::UpdateDetailsViewInfo(UListDataObjectBase* InData
 
 	DynamicDetailRichText->SetText(FText::FromString(DynamicDetails));
 
-	DisabledReasonRichText->SetText(InDataObject->GetDisabledRichText());
+	DisabledReasonRichText->SetText(InDataObject->IsDataCurrentlyEditable() ? 
+		FText::GetEmpty() : InDataObject->GetDisabledRichText());
 }
 
 void UMOptionDetailViewWidget::ClearDetailsViewInfo()

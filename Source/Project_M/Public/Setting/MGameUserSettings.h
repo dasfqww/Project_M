@@ -58,6 +58,13 @@ public:
 
 	//***** Audio Collection Tab ***** //
 
+	//***** Video Collection Tab ***** //
+	UFUNCTION()
+	float GetCurrentDisplayGamma() const;
+
+	UFUNCTION()
+	void SetCurrentDisplayGamma(float InNewGamma);
+
 private:
 	UPROPERTY(Config)
 	FString CurrentGameDifficulty;

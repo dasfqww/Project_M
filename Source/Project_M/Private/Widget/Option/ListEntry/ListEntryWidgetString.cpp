@@ -39,6 +39,15 @@ void UListEntryWidgetString::NativeOnInitialized()
 	AvailableOptionRotator->OnRotatedEvent.AddUObject(this, &ThisClass::OnRotatorValueChanged);
 }
 
+void UListEntryWidgetString::OnToggleEditableState(bool bIsEditable)
+{
+	Super::OnToggleEditableState(bIsEditable);
+	
+	PrevOptionButton->SetIsEnabled(bIsEditable);
+	AvailableOptionRotator->SetIsEnabled(bIsEditable);
+	NextOptionButton->SetIsEnabled(bIsEditable);
+}
+
 void UListEntryWidgetString::OnPreviousOptionButtonClicked()
 {
 	//Debug::Print("prev option");
