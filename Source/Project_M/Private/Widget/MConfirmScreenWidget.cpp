@@ -89,30 +89,30 @@ void UMConfirmScreenWidget::InitConfirmScreen(UConfirmScreenInfoObject* InScreen
 
 	for (const FConfirmScreenButtonInfo& AvailableButtonInfo : InScreenInfoObject->AvailableScreenButtons)
 	{
-		FDataTableRowHandle InputActionRowHandle;
+		//FDataTableRowHandle InputActionRowHandle;
 
-		switch (AvailableButtonInfo.ConfirmScreenButtonType)
-		{
-		/*case EConfirmScreenButtonType::Confirmed:
-			InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultClickAction();
-			break;*/
+		//switch (AvailableButtonInfo.ConfirmScreenButtonType)
+		//{
+		///*case EConfirmScreenButtonType::Confirmed:
+		//	InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultClickAction();
+		//	break;*/
 
-		case EConfirmScreenButtonType::Cancelled:
-			InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
-			break;
+		//case EConfirmScreenButtonType::Cancelled:
+		//	InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
+		//	break;
 
-		case EConfirmScreenButtonType::Closed:
-			InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
-			break;
+		//case EConfirmScreenButtonType::Closed:
+		//	InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
+		//	break;
 
-		default:
-			break;
-		}
+		//default:
+		//	break;
+		//}
 
 
 		UFrontendCommonButtonBase* AddedButton = ButtonsEntryBox->CreateEntry<UFrontendCommonButtonBase>();
 		AddedButton->SetButtonText(AvailableButtonInfo.ButtonTextToDisplay);
-		AddedButton->SetTriggeringInputAction(InputActionRowHandle);
+		//AddedButton->SetTriggeringInputAction(InputActionRowHandle);
 		AddedButton->OnClicked().AddLambda(
 			[ClickedButtonCallback, AvailableButtonInfo, this]()
 			{

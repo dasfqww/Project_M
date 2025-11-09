@@ -703,6 +703,51 @@ void UOptionDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLocalPl
 		}
 	}
 
+	////Gamepad Category
+	//{
+	//	UListDataObjectCollection* GamepadCategoryCollection = NewObject<UListDataObjectCollection>();
+	//	GamepadCategoryCollection->SetDataID(FName("GamepadCategoryCollection"));
+	//	GamepadCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("Gamepad")));
+
+	//	ControlTabCollection->AddChildListData(GamepadCategoryCollection);
+
+	//	//Gamepad inputs
+	//	{
+	//		FPlayerMappableKeyQueryOptions GamepadOnly;
+	//		GamepadOnly.KeyToMatch = EKeys::Gamepad_FaceButton_Bottom;
+	//		GamepadOnly.bMatchBasicKeyTypes = true;
+
+	//		for (const TPair<FGameplayTag, UEnhancedPlayerMappableKeyProfile*>& ProfilePair : EIUserSettings->GetAllSavedKeyProfiles())
+	//		{
+	//			UEnhancedPlayerMappableKeyProfile* MappableKeyProfile = ProfilePair.Value;
+
+	//			check(MappableKeyProfile);
+
+	//			for (const TPair<FName, FKeyMappingRow>& MappingRowPair : MappableKeyProfile->GetPlayerMappingRows())
+	//			{
+	//				for (const FPlayerKeyMapping& KeyMapping : MappingRowPair.Value.Mappings)
+	//				{
+	//					if (MappableKeyProfile->DoesMappingPassQueryOptions(KeyMapping, GamepadOnly))
+	//					{
+	//						/*Debug::Print(
+	//							TEXT(" Mapping ID: ") + KeyMapping.GetMappingName().ToString() +
+	//							TEXT(" Display Name: ") + KeyMapping.GetDisplayName().ToString() +
+	//							TEXT(" Bound Key: ") + KeyMapping.GetCurrentKey().GetDisplayName().ToString()
+	//						);*/
+
+	//						UListDataObjectKeyRemap* KeyRemapDataObject = NewObject<UListDataObjectKeyRemap>();
+	//						KeyRemapDataObject->SetDataID(KeyMapping.GetMappingName());
+	//						KeyRemapDataObject->SetDataDisplayName(KeyMapping.GetDisplayName());
+	//						KeyRemapDataObject->InitKeyRemapData(EIUserSettings, MappableKeyProfile, ECommonInputType::Gamepad, KeyMapping);
+
+	//						GamepadCategoryCollection->AddChildListData(KeyRemapDataObject);
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+
 	RegisteredOptionsTabCollections.Add(ControlTabCollection);
 }
 

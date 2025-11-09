@@ -103,8 +103,32 @@ void UKeyRemapScreenWidget::NativeOnActivated()
 	Super::NativeOnActivated();
 
 	CachedInputPreprocessor = MakeShared<FKeyRemapScreenInputPreprocessor>(CachedDesiredInputType);
+	CachedInputPreprocessor->OnInputPreProcessorKeyPressed.BindUObject(this, &ThisClass::OnValidKeyPressedDetected);
+	CachedInputPreprocessor->OnInputPreProcessorKeySelectCanceled.BindUObject(this, &ThisClass::OnKeySelectCanceled);
 
 	FSlateApplication::Get().RegisterInputPreProcessor(CachedInputPreprocessor, -1);
+
+	FString InputDeviceName;
+
+	switch (CachedDesiredInputType)
+	{
+	case ECommonInputType::MouseAndKeyboard:
+		InputDeviceName = TEXT("Mouse & Keyboard");
+		break;
+
+	case ECommonInputType::Gamepad:
+		InputDeviceName = TEXT("Gamepad");
+		break;
+
+	default:
+		break;
+	}
+
+	const FString DisplayRichMessage = FString::Printf(
+		TEXT("<KeyRemapDefault>Press any</> <KeyRemapHighlight>%s</> <KeyRemapDefault>key.</>"), *InputDeviceName
+	);
+
+	RemapMessageRichText->SetText(FText::FromString(DisplayRichMessage));
 }
 
 void UKeyRemapScreenWidget::NativeOnDeactivated()
@@ -117,4 +141,43 @@ void UKeyRemapScreenWidget::NativeOnDeactivated()
 
 		CachedInputPreprocessor.Reset();
 	}
+}
+
+void UKeyRemapScreenWidget::OnValidKeyPressedDetected(const FKey& PressedKey)
+{
+	RequestDeactivateWidget(
+		[this, PressedKey]()
+		{
+			//Debug::Print(TEXT("Pressed Key: ") + PressedKey.GetDisplayName().ToString());
+			OnKeyRemapScreenKeyPressed.ExecuteIfBound(PressedKey);
+		}
+	);
+}
+
+void UKeyRemapScreenWidget::OnKeySelectCanceled(const FString& CanceledReason)
+{
+	RequestDeactivateWidget(
+		[this, CanceledReason]()
+		{
+			//Debug::Print(CanceledReason);
+			OnKeyRemapScreenKeySelectCanceled.ExecuteIfBound(CanceledReason);
+		}
+	);
+}
+
+void UKeyRemapScreenWidget::RequestDeactivateWidget(TFunction<void()> PreDeactivateCallback)
+{
+	//Delay a tick to make sure the input is processed correctly
+	FTSTicker::GetCoreTicker().AddTicker(
+		FTickerDelegate::CreateLambda(
+			[PreDeactivateCallback, this](float DeltaTime)->bool
+			{
+				PreDeactivateCallback();
+
+				DeactivateWidget();
+
+				return false;
+			}
+		)
+	);
 }

@@ -21,6 +21,12 @@ class PROJECT_M_API UKeyRemapScreenWidget : public UWidget_ActivatableBase
 public:
 	void SetDesiredInputTypeToFilter(ECommonInputType InDesiredInputType);
 
+	DECLARE_DELEGATE_OneParam(FOnKeyRemapScreenKeyPressedDelegate, const FKey& /*PressedKey*/)
+	FOnKeyRemapScreenKeyPressedDelegate OnKeyRemapScreenKeyPressed;
+
+	DECLARE_DELEGATE_OneParam(FOnKeyRemapScreenKeySelectCanceledDelegate, const FString& /*CanceledReason*/)
+	FOnKeyRemapScreenKeySelectCanceledDelegate OnKeyRemapScreenKeySelectCanceled;
+
 protected:
 	//~ Begin UCommonActivatableWidget Interface
 	virtual void NativeOnActivated() override;
@@ -28,6 +34,12 @@ protected:
 	//~ End UCommonActivatableWidget Interface
 
 private:
+	void OnValidKeyPressedDetected(const FKey& PressedKey);
+	void OnKeySelectCanceled(const FString& CanceledReason);
+
+	//Delay a tick to make sure the input key is captured properly before calling the PreDeactivateCallback and deactivating the widget
+	void RequestDeactivateWidget(TFunction<void()> PreDeactivateCallback);
+
 	//***** Bound Widgets ***** //
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonRichTextBlock> RemapMessageRichText;
