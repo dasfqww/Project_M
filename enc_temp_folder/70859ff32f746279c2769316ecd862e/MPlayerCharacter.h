@@ -8,8 +8,6 @@
 
 class USpringArmComponent;
 class UCameraComponent;
-class UInputAction;
-class UInputMappingContext;
 
 /**
  * 
@@ -33,10 +31,5 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FollowCamera;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputAction> JumpAction;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputMappingContext> GameplayInputMappingContext;
 	
 };
