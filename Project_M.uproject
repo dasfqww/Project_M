@@ -14,7 +14,8 @@
 				"CommonUI",
 				"DeveloperSettings",
 				"CoreUObject",
-				"UMG"
+				"UMG",
+				"GameplayAbilities"
 			]
 		}
 	],
@@ -32,6 +33,10 @@
 		},
 		{
 			"Name": "MediaMovieStreamer",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayAbilities",
 			"Enabled": true
 		}
 	]

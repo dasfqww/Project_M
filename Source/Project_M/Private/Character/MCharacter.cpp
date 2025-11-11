@@ -3,6 +3,8 @@
 
 #include "Character/MCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GAS/MAbilitySystemComponent.h"
+#include "GAS/MAttributeSet.h"
 
 // Sets default values
 AMCharacter::AMCharacter()
@@ -10,6 +12,9 @@ AMCharacter::AMCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	MAbilitySystemComp = CreateDefaultSubobject<UMAbilitySystemComponent>("Abilty System Component");
+	MAttributeSet = CreateDefaultSubobject<UMAttributeSet>("Attribute Set");
 }
 
 // Called when the game starts or when spawned
@@ -17,6 +22,11 @@ void AMCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+UAbilitySystemComponent* AMCharacter::GetAbilitySystemComponent() const
+{
+	return MAbilitySystemComp;
 }
 
 // Called every frame

@@ -4,12 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Character/MCharacter.h"
+#include "InputActionValue.h"
 #include "MPlayerCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
+class UDataAsset_InputConfig;
+struct FInputActionValue;
 
 /**
  * 
@@ -22,6 +25,7 @@ public:
 	AMPlayerCharacter();
 
 	virtual void PawnClientRestart() override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 protected:
 
 private:
@@ -33,10 +37,18 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FollowCamera;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UDataAsset_InputConfig> InputConfigDataAsset;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> JumpAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> GameplayInputMappingContext;
 	
+	void HandleLookInput(const FInputActionValue& InputActionValue);
+	void HandleMoveInput(const FInputActionValue& InputActionValue);
+
+	FVector GetLookRightDir() const;
+	FVector GetLookFwdDir() const;
+	FVector GetMoveFwdDir() const;
 };
