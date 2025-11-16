@@ -13,5 +13,10 @@ namespace MGameplayTags
 	PROJECT_M_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Jump)
 #pragma endregion
 
+#pragma region Ability
+	PROJECT_M_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_BasicAttack)
+
+#pragma endregion
+
 
 }

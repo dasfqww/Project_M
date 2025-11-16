@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/MCharacter.h"
 #include "InputActionValue.h"
+#include "GameplayTagContainer.h"
 #include "MPlayerCharacter.generated.h"
 
 class USpringArmComponent;
@@ -47,6 +48,8 @@ private:
 	
 	void HandleLookInput(const FInputActionValue& InputActionValue);
 	void HandleMoveInput(const FInputActionValue& InputActionValue);
+	void AbilityInputPressed(const FGameplayTag& InputTag);
+	void AbilityInputReleased(const FGameplayTag& InputTag);
 
 	FVector GetLookRightDir() const;
 	FVector GetLookFwdDir() const;

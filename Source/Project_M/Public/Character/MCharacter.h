@@ -9,6 +9,7 @@
 
 class UMAbilitySystemComponent;
 class UMAttributeSet;
+class UWidgetComponent;
 
 UCLASS()
 class PROJECT_M_API AMCharacter : public ACharacter, public IAbilitySystemInterface
@@ -19,11 +20,14 @@ public:
 	// Sets default values for this character's properties
 	AMCharacter();
 
-	
+	void ServerSideInit();
+	void ClientSideInit();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void PossessedBy(AController* NewController) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 public:	
@@ -34,9 +38,30 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	UPROPERTY()
+	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")
 	TObjectPtr<UMAbilitySystemComponent> MAbilitySystemComp;
 
 	UPROPERTY()
 	TObjectPtr<UMAttributeSet> MAttributeSet;
+
+#pragma region UI
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UWidgetComponent> OverheadWidgetComp;
+
+	void ConfigOverheadStatWidget();
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	float CheckInterval = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	float CheckRangeSquared = 10000000.f;
+
+	FTimerHandle HeadStatGaugeVisibilityUpdateTimerHandle;
+
+	void UpdateHeadGaugeVisibility();
+
+#pragma endregion
+public:
+	FORCEINLINE bool IsLocallyControlledByPlayer() const { return GetController() && GetController()->IsLocalPlayerController(); }
 };

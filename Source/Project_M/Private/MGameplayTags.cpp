@@ -10,5 +10,11 @@ namespace MGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Look, "InputTag.Look")
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Jump, "InputTag.Jump")
 #pragma endregion
+
+#pragma region Ability
+	UE_DEFINE_GAMEPLAY_TAG(Ability_BasicAttack, "Ability.BasicAttack")
+
+#pragma endregion
+
 }
 	

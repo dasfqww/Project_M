@@ -6,9 +6,11 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "AbilitySystemComponent.h"
 #include "EnhancedInputSubsystems.h"
 //#include "EnhancedInputComponent.h"
 #include "Component/Input/MInputComponent.h"
+#include "GAS/MAbilitySystemComponent.h"
 #include "DataAsset/Input/DataAsset_InputConfig.h"
 #include "MGameplayTags.h"
 
@@ -68,7 +70,7 @@ void AMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		/*MInputComponent->BindNativeInputAction(InputConfigDataAsset, MGameplayTags::InputTag_Move,
 			ETriggerEvent::Triggered, this, &ThisClass::Input_Move);*/
 	
-
+	//MInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::AbilityInputPressed);
 }
 
 void AMPlayerCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
@@ -87,6 +89,16 @@ void AMPlayerCharacter::HandleMoveInput(const FInputActionValue& InputActionValu
 	InputVal.Normalize();
 
 	AddMovementInput(GetMoveFwdDir() * InputVal.Y + GetLookRightDir() * InputVal.X);
+}
+
+void AMPlayerCharacter::AbilityInputPressed(const FGameplayTag& InputTag)
+{
+	
+}
+
+void AMPlayerCharacter::AbilityInputReleased(const FGameplayTag& InputTag)
+{
+
 }
 
 FVector AMPlayerCharacter::GetLookRightDir() const
