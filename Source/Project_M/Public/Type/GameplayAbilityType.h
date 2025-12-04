@@ -1,7 +1,7 @@
 #pragma once
 
 UENUM(BlueprintType)
-enum class EAbilityInputID : uint8
+enum class EMAbilityInputID : uint8
 {
 	None							UMETA(DisplayName = "None"),
 	BasicAttack						UMETA(DisplayName = "Basic Attack"),

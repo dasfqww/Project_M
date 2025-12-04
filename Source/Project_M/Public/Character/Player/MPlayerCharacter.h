@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/MCharacter.h"
 #include "InputActionValue.h"
+#include "Type/GameplayAbilityType.h"
 #include "GameplayTagContainer.h"
 #include "MPlayerCharacter.generated.h"
 
@@ -44,12 +45,16 @@ private:
 	TObjectPtr<UInputAction> JumpAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TMap<EMAbilityInputID, UInputAction*> GameplayAbilityInputActions;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> GameplayInputMappingContext;
 	
 	void HandleLookInput(const FInputActionValue& InputActionValue);
 	void HandleMoveInput(const FInputActionValue& InputActionValue);
-	void AbilityInputPressed(const FGameplayTag& InputTag);
-	void AbilityInputReleased(const FGameplayTag& InputTag);
+	void HandleAbilityInput(const FInputActionValue& InputActionValue, EMAbilityInputID InputID);
+	/*void AbilityInputPressed(FGameplayTag InputTag);
+	void AbilityInputReleased(FGameplayTag InputTag);*/
 
 	FVector GetLookRightDir() const;
 	FVector GetLookFwdDir() const;

@@ -38,5 +38,6 @@ void AMPlayerController::DisplayHUDWidget()
 	if (IsValid(HUDWidget))
 	{
 		HUDWidget->AddToViewport();
+		HUDWidget->ConfigAbilities(PlayerCharacter->GetAbilities());
 	}
 }

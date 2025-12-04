@@ -8,6 +8,8 @@
 #include "GAS/MAttributeSet.h"
 #include "Widget/Overhead/OverheadStatGauge.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/BoxComponent.h"
+#include "Component/Combat/PawnCombatComponent.h"
 
 // Sets default values
 AMCharacter::AMCharacter()
@@ -21,6 +23,19 @@ AMCharacter::AMCharacter()
 
 	OverheadWidgetComp = CreateDefaultSubobject<UWidgetComponent>("Overhead Widget Component");
 	OverheadWidgetComp->SetupAttachment(GetRootComponent());
+
+	CombatComponent = CreateDefaultSubobject<UPawnCombatComponent>("Combat Component");
+
+	LeftHandCollisionBox = CreateDefaultSubobject<UBoxComponent>("LeftHandCollisionBox");
+	LeftHandCollisionBox->SetupAttachment(GetMesh());
+	LeftHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LeftHandCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnBodyCollisionBoxBeginOverlap);
+
+	RightHandCollisionBox = CreateDefaultSubobject<UBoxComponent>("RightHandCollisionBox");
+	RightHandCollisionBox->SetupAttachment(GetMesh());
+	RightHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RightHandCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnBodyCollisionBoxBeginOverlap);
+
 }
 
 void AMCharacter::ServerSideInit()
@@ -34,6 +49,12 @@ void AMCharacter::ClientSideInit()
 {
 	MAbilitySystemComp->InitAbilityActorInfo(this, this);
 
+}
+
+const TMap<EMAbilityInputID, TSubclassOf<UGameplayAbility>>& AMCharacter::GetAbilities() const
+{
+	// TODO: 여기에 return 문을 삽입합니다.
+	return MAbilitySystemComp->GetAbilities();
 }
 
 // Called when the game starts or when spawned
@@ -54,7 +75,26 @@ void AMCharacter::PossessedBy(AController* NewController)
 
 UAbilitySystemComponent* AMCharacter::GetAbilitySystemComponent() const
 {
-	return MAbilitySystemComp;
+	return GetMAbilitySystemComponent();
+}
+
+void AMCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.GetMemberPropertyName() ==
+		GET_MEMBER_NAME_CHECKED(ThisClass, LeftHandCollisionBoxAttachBoneName))
+	{
+		LeftHandCollisionBox->AttachToComponent(GetMesh(),
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale, LeftHandCollisionBoxAttachBoneName);
+	}
+
+	if (PropertyChangedEvent.GetMemberPropertyName() ==
+		GET_MEMBER_NAME_CHECKED(ThisClass, RightHandCollisionBoxAttachBoneName))
+	{
+		RightHandCollisionBox->AttachToComponent(GetMesh(),
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale, RightHandCollisionBoxAttachBoneName);
+	}
 }
 
 // Called every frame
@@ -69,6 +109,16 @@ void AMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AMCharacter::OnBodyCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+	bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (IsValid(CombatComponent))
+	{
+
+	}
 }
 
 void AMCharacter::ConfigOverheadStatWidget()

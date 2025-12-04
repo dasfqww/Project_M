@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
+#include "GAS/MAbilitySystemComponent.h"
 #include "EnhancedInputSubsystems.h"
 //#include "EnhancedInputComponent.h"
 #include "Component/Input/MInputComponent.h"
@@ -70,7 +71,15 @@ void AMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		/*MInputComponent->BindNativeInputAction(InputConfigDataAsset, MGameplayTags::InputTag_Move,
 			ETriggerEvent::Triggered, this, &ThisClass::Input_Move);*/
 	
-	//MInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::AbilityInputPressed);
+	for (const TPair<EMAbilityInputID, UInputAction*>& InputActionPair : GameplayAbilityInputActions)
+	{
+		MInputComponent->BindAction(InputActionPair.Value, 
+			ETriggerEvent::Triggered, this, &ThisClass::HandleAbilityInput, InputActionPair.Key);
+	}
+
+	//MInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::AbilityInputPressed, &ThisClass::AbilityInputReleased);
+	//MInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::HandleAbilityInput);
+	
 }
 
 void AMPlayerCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
@@ -91,15 +100,37 @@ void AMPlayerCharacter::HandleMoveInput(const FInputActionValue& InputActionValu
 	AddMovementInput(GetMoveFwdDir() * InputVal.Y + GetLookRightDir() * InputVal.X);
 }
 
-void AMPlayerCharacter::AbilityInputPressed(const FGameplayTag& InputTag)
+void AMPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionValue, EMAbilityInputID InputID)
 {
-	
+	bool bPressed = InputActionValue.Get<bool>();
+
+	//int32 InputID = GetMAbilitySystemComponent()->GetInputIDFromTag(InputTag);
+
+	//Debug::Print("bPressd : ", bPressed);
+
+	if (bPressed)
+	{
+		//GetMAbilitySystemComponent()->AbilityInputPressed(InputTag);
+		GetAbilitySystemComponent()->AbilityLocalInputPressed((int32)InputID);
+	}
+
+	else
+	{
+		//GetMAbilitySystemComponent()->AbilityInputReleased(InputTag);
+		GetAbilitySystemComponent()->AbilityLocalInputReleased((int32)InputID);
+
+	}
 }
 
-void AMPlayerCharacter::AbilityInputReleased(const FGameplayTag& InputTag)
-{
-
-}
+//void AMPlayerCharacter::AbilityInputPressed(FGameplayTag InputTag)
+//{
+//	GetMAbilitySystemComponent()->AbilityInputPressed(InputTag);
+//}
+//
+//void AMPlayerCharacter::AbilityInputReleased(FGameplayTag InputTag)
+//{
+//	GetMAbilitySystemComponent()->AbilityInputReleased(InputTag);
+//}
 
 FVector AMPlayerCharacter::GetLookRightDir() const
 {

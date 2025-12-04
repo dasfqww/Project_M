@@ -26,6 +26,10 @@ public:
 	template<class UserObject, typename CallbackFunc>
 	void BindAbilityInputAction(const UDataAsset_InputConfig* InInputConfig, UserObject* ContextObject,
 		CallbackFunc InputPressedFunc, CallbackFunc InputReleasedFunc);
+	
+	template<class UserObject, typename CallbackFunc>
+	void BindAbilityInputAction(const UDataAsset_InputConfig* InInputConfig, UserObject* ContextObject,
+		CallbackFunc InputPressedFunc);
 };
 
 template<class UserObject, typename CallbackFunc>
@@ -55,11 +59,12 @@ inline void UMInputComponent::BindNativeInputAction(const UDataAsset_InputConfig
 }
 
 template<class UserObject, typename CallbackFunc>
-inline void UMInputComponent::BindAbilityInputAction(const UDataAsset_InputConfig* InInputConfig, UserObject* ContextObject, CallbackFunc InputPressedFunc, CallbackFunc InputReleasedFunc)
+inline void UMInputComponent::BindAbilityInputAction(const UDataAsset_InputConfig* InInputConfig,
+	UserObject* ContextObject, CallbackFunc InputPressedFunc, CallbackFunc InputReleasedFunc)
 {
 	checkf(InInputConfig, TEXT("Input config data asset is null,can not proceed with binding"));
 
-	for (const FWarriorInputActionConfig& AbilityInputActionConfig : InInputConfig->AbilityInputActions)
+	for (const FMInputActionConfig& AbilityInputActionConfig : InInputConfig->AbilityInputActions)
 	{
 		if (!AbilityInputActionConfig.IsValid()) continue;
 
@@ -67,7 +72,20 @@ inline void UMInputComponent::BindAbilityInputAction(const UDataAsset_InputConfi
 			AbilityInputActionConfig.InputTag);
 		BindAction(AbilityInputActionConfig.InputAction, ETriggerEvent::Completed, ContextObject, InputReleasedFunc,
 			AbilityInputActionConfig.InputTag);
-		/*BindAction(AbilityInputActionConfig.InputAction, ETriggerEvent::Triggered,
-			ContextObject, InputPressedFunc, AbilityInputActionConfig.InputTag);*/
+	}
+}
+
+template<class UserObject, typename CallbackFunc>
+inline void UMInputComponent::BindAbilityInputAction(const UDataAsset_InputConfig* InInputConfig,
+	UserObject* ContextObject, CallbackFunc InputPressedFunc)
+{
+	checkf(InInputConfig, TEXT("Input config data asset is null,can not proceed with binding"));
+
+	for (const FMInputActionConfig& AbilityInputActionConfig : InInputConfig->AbilityInputActions)
+	{
+		if (!AbilityInputActionConfig.IsValid()) continue;
+
+		BindAction(AbilityInputActionConfig.InputAction, ETriggerEvent::Triggered,
+			ContextObject, InputPressedFunc, AbilityInputActionConfig.InputTag);
 	}
 }
