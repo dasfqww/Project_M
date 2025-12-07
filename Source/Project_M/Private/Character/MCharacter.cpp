@@ -4,12 +4,18 @@
 #include "Character/MCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/MAbilitySystemComponent.h"
 #include "GAS/MAttributeSet.h"
+#include "MGameplayTags.h"
 #include "Widget/Overhead/OverheadStatGauge.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
 #include "Component/Combat/PawnCombatComponent.h"
+#include "Net/UnrealNetwork.h"\
+
+#include "MDebugHelper.h"
 
 // Sets default values
 AMCharacter::AMCharacter()
@@ -36,6 +42,7 @@ AMCharacter::AMCharacter()
 	RightHandCollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RightHandCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnBodyCollisionBoxBeginOverlap);
 
+	BindGASChangeDelegates();
 }
 
 void AMCharacter::ServerSideInit()
@@ -62,6 +69,7 @@ void AMCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	ConfigOverheadStatWidget();
+	MeshRelativeTransform = GetMesh()->GetRelativeTransform();
 }
 
 void AMCharacter::PossessedBy(AController* NewController)
@@ -111,6 +119,45 @@ void AMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 }
 
+void AMCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)
+{
+	TeamID = InTeamID;
+}
+
+FGenericTeamId AMCharacter::GetGenericTeamId() const
+{
+	return TeamID;
+}
+
+void AMCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AMCharacter, TeamID);
+}
+
+void AMCharacter::BindGASChangeDelegates()
+{
+	if (IsValid(MAbilitySystemComp))
+	{
+		MAbilitySystemComp->
+			RegisterGameplayTagEvent(MGameplayTags::Player_Status_Dead).
+			AddUObject(this, &ThisClass::DeathUpdated);
+	}
+}
+
+void AMCharacter::DeathUpdated(const FGameplayTag InTag, int32 NewCount)
+{
+	if (NewCount!=0)
+	{
+		StartDeathSequence();
+	}
+
+	else
+	{
+		Respawn();
+	}
+}
+
 void AMCharacter::OnBodyCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
@@ -152,5 +199,88 @@ void AMCharacter::UpdateHeadGaugeVisibility()
 		float DistSquared = FVector::DistSquared(GetActorLocation(), LocalPlayerPawn->GetActorLocation());
 		OverheadWidgetComp->SetHiddenInGame(DistSquared > CheckRangeSquared);
 	}
+}
+
+void AMCharacter::SetStatusGaugeEnabled(bool bIsEnabled)
+{
+	GetWorldTimerManager().ClearTimer(HeadStatGaugeVisibilityUpdateTimerHandle);
+	if (bIsEnabled)
+	{
+		ConfigOverheadStatWidget();
+	}
+	else
+	{
+		OverheadWidgetComp->SetHiddenInGame(true);
+	}
+}
+
+void AMCharacter::DeathMontageFinished()
+{
+	SetRagdollEnabled(true);
+}
+
+void AMCharacter::SetRagdollEnabled(bool bIsEnabled)
+{
+	if (bIsEnabled)
+	{
+		GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	}
+	else
+	{
+		GetMesh()->SetSimulatePhysics(false);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		GetMesh()->SetRelativeTransform(MeshRelativeTransform);
+	}
+}
+
+void AMCharacter::PlayDeathAnim()
+{
+	if (IsValid(DeathMontage))
+	{
+		float MontageDuration =	PlayAnimMontage(DeathMontage);
+		GetWorldTimerManager().SetTimer(DeathMontageTimerHandle,
+			this, &ThisClass::DeathMontageFinished, MontageDuration + DeathMontageFinishTimeShift);
+	}
+}
+
+void AMCharacter::StartDeathSequence()
+{
+	//Debug::Print("Dead...");
+	OnDead();
+	PlayDeathAnim();
+	SetStatusGaugeEnabled(false);
+
+
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AMCharacter::Respawn()
+{
+	//Debug::Print("Respawn...");
+	OnRespawn();
+	SetRagdollEnabled(false);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
+	SetStatusGaugeEnabled(true);
+	
+	if (IsValid(MAbilitySystemComp))
+	{
+		MAbilitySystemComp->ApplyFullStatEffect();
+	}
+}
+
+void AMCharacter::OnDead()
+{
+
+}
+
+void AMCharacter::OnRespawn()
+{
+
 }
 

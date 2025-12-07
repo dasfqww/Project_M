@@ -6,7 +6,8 @@
 
 UMAbilitySystemComponent::UMAbilitySystemComponent()
 {
-
+	GetGameplayAttributeValueChangeDelegate
+		(UMAttributeSet::GetCurrentHealthAttribute()).AddUObject(this, &ThisClass::HealthUpdated);
 }
 
 void UMAbilitySystemComponent::ApplyInitialEffects()
@@ -49,6 +50,11 @@ void UMAbilitySystemComponent::GiveInitialAbilities()
 	//	Spec.DynamicAbilityTags.AddTag(AbilityPair.Key); // ก็ InputTag ภ๚ภๅ
 	//	GiveAbility(Spec);
 	//}
+}
+
+void UMAbilitySystemComponent::ApplyFullStatEffect()
+{
+	AuthApplyGameplayEffect(FullStatEffectClass);
 }
 
 const TMap<EMAbilityInputID, TSubclassOf<UGameplayAbility>>& UMAbilitySystemComponent::GetAbilities() const
@@ -97,15 +103,23 @@ int32 UMAbilitySystemComponent::GetInputIDFromTag(const FGameplayTag& Tag) const
 	return 0;
 }
 
+void UMAbilitySystemComponent::AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> InEffectClass, int InLevel)
+{
+	if (GetOwner()&&GetOwner()->HasAuthority())
+	{
+		FGameplayEffectSpecHandle EffectSpecHandle
+			= MakeOutgoingSpec(InEffectClass, InLevel, MakeEffectContext());
+		ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+	}
+}
+
 void UMAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& ChangeData)
 {
-	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
+	if (!GetOwner()) return;
 
-	if (ChangeData.NewValue<=0&&IsValid(DeathEffectClass))
+	if (ChangeData.NewValue<=0&& GetOwner()->HasAuthority() && IsValid(DeathEffectClass))
 	{
-		FGameplayEffectSpecHandle EffectSpecHandle 
-			= MakeOutgoingSpec(DeathEffectClass, 1, MakeEffectContext());
-		ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+		AuthApplyGameplayEffect(DeathEffectClass);
 	}
 }
 

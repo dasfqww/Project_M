@@ -4,6 +4,7 @@
 #include "Controller/MPlayerController.h"
 #include "Character/Player/MPlayerCharacter.h"
 #include "Widget/HUD/HUDWidget.h"
+#include "Net/UnrealNetwork.h"
 
 void AMPlayerController::OnPossess(APawn* NewPawn)
 {
@@ -13,6 +14,7 @@ void AMPlayerController::OnPossess(APawn* NewPawn)
 	if (IsValid(PlayerCharacter))
 	{
 		PlayerCharacter->ServerSideInit();
+		PlayerCharacter->SetGenericTeamId(TeamID);
 	}
 
 }
@@ -28,6 +30,22 @@ void AMPlayerController::AcknowledgePossession(APawn* NewPawn)
 		PlayerCharacter->ClientSideInit();
 		DisplayHUDWidget();
 	}
+}
+
+void AMPlayerController::SetGenericTeamId(const FGenericTeamId& InTeamID)
+{
+	TeamID = InTeamID;
+}
+
+FGenericTeamId AMPlayerController::GetGenericTeamId() const
+{
+	return TeamID;
+}
+
+void AMPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AMPlayerController, TeamID);
 }
 
 void AMPlayerController::DisplayHUDWidget()

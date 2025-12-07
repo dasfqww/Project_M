@@ -26,5 +26,10 @@ namespace MGameplayTags
 
 #pragma endregion
 
+#pragma region Player
+	UE_DEFINE_GAMEPLAY_TAG(Player_Status_Dead, "Player.Status.Dead")
+
+#pragma endregion
+
 }
 	

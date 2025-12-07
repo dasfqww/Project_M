@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
 #include "Type/GameplayAbilityType.h"
+#include "GenericTeamAgentInterface.h"
 #include "MCharacter.generated.h"
 
 class UMAbilitySystemComponent;
@@ -16,7 +18,7 @@ class UPawnCombatComponent;
 class UGameplayAbility;
 
 UCLASS()
-class PROJECT_M_API AMCharacter : public ACharacter, public IAbilitySystemInterface
+class PROJECT_M_API AMCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -45,7 +47,18 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/** Assigns Team Agent to given TeamID */
+	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
+
+	/** Retrieve team identifier in form of FGenericTeamId */
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
 private:
+	void BindGASChangeDelegates();
+	void DeathUpdated(const FGameplayTag InTag, int32 NewCount);
+
 #pragma region Ability
 	UPROPERTY(VisibleDefaultsOnly, Category = "Gameplay Ability")
 	TObjectPtr<UMAbilitySystemComponent> MAbilitySystemComp;
@@ -92,8 +105,39 @@ private:
 	FTimerHandle HeadStatGaugeVisibilityUpdateTimerHandle;
 
 	void UpdateHeadGaugeVisibility();
+	void SetStatusGaugeEnabled(bool bIsEnabled);
 
 #pragma endregion
+
+#pragma region Death&Respawn
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	float DeathMontageFinishTimeShift = -0.8f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	TObjectPtr<UAnimMontage> DeathMontage;
+
+	FTransform MeshRelativeTransform;
+
+	FTimerHandle DeathMontageTimerHandle;
+
+	void DeathMontageFinished();
+	void SetRagdollEnabled(bool bIsEnabled);
+
+	void PlayDeathAnim();
+
+	void StartDeathSequence();
+	void Respawn();
+
+	virtual void OnDead();
+	virtual void OnRespawn();
+#pragma endregion
+
+#pragma region Team
+	UPROPERTY(Replicated)
+	FGenericTeamId TeamID;
+#pragma endregion
+
+
 public:
 	FORCEINLINE bool IsLocallyControlledByPlayer() const { return GetController() && GetController()->IsLocalPlayerController(); }
 	FORCEINLINE UPawnCombatComponent* GetCombatSystemComponent() const { return CombatComponent; }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "GameplayEffectTypes.h"
 #include "Type/GameplayAbilityType.h"
 #include "MAbilitySystemComponent.generated.h"
 
@@ -19,6 +20,7 @@ public:
 
 	void ApplyInitialEffects();
 	void GiveInitialAbilities();
+	void ApplyFullStatEffect();
 
 	const TMap<EMAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities()const;
 
@@ -28,10 +30,14 @@ public:
 	int32 GetInputIDFromTag(const FGameplayTag& Tag) const;
 
 private:
+	void AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect>InEffectClass, int InLevel = 1);
 	void HealthUpdated(const FOnAttributeChangeData& ChangeData);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TSubclassOf<UGameplayEffect> DeathEffectClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
+	TSubclassOf<UGameplayEffect> FullStatEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TArray<TSubclassOf<UGameplayEffect>> InitialEffects;

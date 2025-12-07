@@ -29,5 +29,9 @@ namespace MGameplayTags
 
 #pragma endregion
 
+#pragma region Player
+	PROJECT_M_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Status_Dead)
+
+#pragma endregion
 
 }

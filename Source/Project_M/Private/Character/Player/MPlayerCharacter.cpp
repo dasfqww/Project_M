@@ -147,4 +147,22 @@ FVector AMPlayerCharacter::GetMoveFwdDir() const
 	return FVector::CrossProduct(GetLookRightDir(), FVector::UpVector);
 }
 
+void AMPlayerCharacter::OnDead()
+{
+	APlayerController* PlayerController = GetController<APlayerController>();
+	if (IsValid(PlayerController))
+	{
+		DisableInput(PlayerController);
+	}
+}
+
+void AMPlayerCharacter::OnRespawn()
+{
+	APlayerController* PlayerController = GetController<APlayerController>();
+	if (IsValid(PlayerController))
+	{
+		EnableInput(PlayerController);
+	}
+}
+
 

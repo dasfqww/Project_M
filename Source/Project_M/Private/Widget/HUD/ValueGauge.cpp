@@ -38,7 +38,7 @@ void UValueGauge::SetValue(float InValue, float InMaxValue)
 	CachedValue = InValue;
 	CachedMaxValue = InMaxValue;
 
-	if (InValue==0)
+	if (InMaxValue ==0)
 	{
 		Debug::Print(FString::Printf(TEXT("Value Gauge: %s, InMaxValue can't be 0"), *GetName()));
 		return;
